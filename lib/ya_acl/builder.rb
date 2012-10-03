@@ -36,7 +36,8 @@ module YaAcl
 
     def resource(name, allow_roles = [], &block)
       raise ArgumentError, 'Options "allow_roles" must be Array' unless allow_roles.is_a? Array
-      resource_allow_roles = allow_roles << @global_allow_role
+      resource_allow_roles = allow_roles
+      resource_allow_roles << @global_allow_role if @global_allow_role
       resource = Resource.new(name)
       acl.add_resource resource
       PrivilegeProxy.new(resource.name, resource_allow_roles, acl, block)
@@ -58,7 +59,7 @@ module YaAcl
           proxy = PrivilegeAssertProxy.new(asserts_block, all_allow_roles)
           asserts = proxy.asserts
         end
-        
+
         all_allow_roles.each do |role|
           if asserts[role]
             asserts[role].each do |assert|
@@ -73,7 +74,7 @@ module YaAcl
 
     class PrivilegeAssertProxy
       attr_reader :asserts
-      
+
       def initialize(block, all_allow_roles)
         @all_allow_roles = all_allow_roles
         @asserts = {}
