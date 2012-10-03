@@ -15,7 +15,7 @@ describe YaAcl::Acl do
     assert = YaAcl::Assert.new :assert, [:object_user_id, :user_id] do
       object_user_id == user_id
     end
-    
+
     @acl.add_assert assert
   end
 
@@ -52,5 +52,11 @@ describe YaAcl::Acl do
 
     @acl.allow?(:name, :empty, [:guest, :admin]).should be_true
     @acl.allow?(:name, :index, [:guest, :admin], :var => false).should be_true
+  end
+
+  it 'should be raise exception for empty privilegy' do
+    lambda {
+      @acl.allow?(:name, :create, [:admin])
+    }.should raise_exception(ArgumentError, "Undefine privilege 'create' for resource 'name'")
   end
 end

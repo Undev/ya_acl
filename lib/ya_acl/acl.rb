@@ -32,7 +32,7 @@ module YaAcl
       end
       @roles[role_name.to_sym]
     end
-    
+
     def add_resource(resource)
       @resources ||= {}
       @resources[resource.name] = resource
@@ -48,7 +48,7 @@ module YaAcl
     def privilege(resource_name, privilege_name)
       r = resource(resource_name)
       p = privilege_name.to_sym
-      unless @acl[r.name][p]
+      if @acl[r.name].nil? || @acl[r.name][p].nil?
         raise ArgumentError, "Undefine privilege '#{privilege_name}' for resource '#{resource_name}'"
       end
 
@@ -113,7 +113,7 @@ module YaAcl
     def check!(resource_name, privilege_name, roles = [], params = {})
       result = check(resource_name, privilege_name, roles, params)
       return true if result.status
-      
+
       message = "Access denied for '#{resource_name}', privilege '#{privilege_name}'"
       if result.assert
         raise AssertAccessDeniedError, message + ", role '#{result.role}' and assert '#{result.assert.name}'"
